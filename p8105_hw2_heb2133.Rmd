@@ -65,14 +65,15 @@ month_df =
 
 precipitation_df = 
   bind_rows(precipitation_2018, precipitation_2017) %>% 
-  relocate (year)
-
+  relocate (year)  
+  
 left_join(precipitation_df, month_df, by = "month")
 ```
 
-Write a paragraph about these data; 
-you are encouraged to use inline R. Be sure to note the number of observations in both resulting datasets, and give examples of key variables. 
+This dataset contains information about the Mr. Trash Wheel trash collector in Baltimore, Maryland. Key variables in this dataset includes year, month, weight of trash collected, and specific kinds of trash. There are a total of `r ncol(trashwheel_df)` columns in this dataset and `r nrow(trashwheel_df)` rows. 
 
-For available data, what was the total precipitation in 2018? What was the median number of sports balls in a dumpster in 2017?
+
+The total precipitation in 2018 was 
+The median number of sports balls in a dumpster in 2017 was 
 
 ## Problem 2
