@@ -67,13 +67,29 @@ precipitation_df =
   bind_rows(precipitation_2018, precipitation_2017) %>% 
   relocate(year)  
   
-precipitation_df = left_join(precipitation_df, month_df, by = "month")
+precip_final_df = left_join(precipitation_df, month_df, by = "month")
 ```
 
 This dataset contains information about the Mr. Trash Wheel trash collector in Baltimore, Maryland. Key variables in this dataset includes year, month, weight of trash collected, and specific kinds of trash. There are a total of `r ncol(trashwheel_df)` columns in this dataset and `r nrow(trashwheel_df)` rows. 
 
+The precipitation dataset contains information on inches of precipitation measured each month. In our consolidated dataset of precipitation in 2017 and 2018, key variables include year, month (by numeric order and name), and inches of precipitation. There are a total of `r ncol(precip_final_df)` columns and `r nrow(precip_final_df)` rows.
 
-The total precipitation in 2018 was 
-The median number of sports balls in a dumpster in 2017 was 
+```{r}
+precip_sum_2018 = 
+  precipitation_2018 %>% 
+  select(total) %>% 
+  summarize_if(is.numeric, sum)
+```
+
+The total precipitation in 2018 was 70.3 inches. 
+
+```{r}
+trashwheel_2017_balls = 
+  filter(trashwheel_df, year == 2017) %>% 
+  select(sports_balls) %>% 
+  summarize_if(is.numeric, median)
+```
+
+The median number of sports balls in a dumpster in 2017 was 8.
 
 ## Problem 2
