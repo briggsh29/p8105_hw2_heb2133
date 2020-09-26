@@ -93,3 +93,13 @@ trashwheel_2017_balls =
 The median number of sports balls in a dumpster in 2017 was 8.
 
 ## Problem 2
+
+Read and clean the NYC transit data. Convert the entry variable from character to a logical variable. 
+
+```{r}
+NYC_transit_df = 
+    read_csv("./NYC_Transit_Subway_Entrance_And_Exit_Data (1).csv") %>% 
+  janitor::clean_names() %>% 
+  select(line, station_name, station_latitude, station_longitude, starts_with("route"), entry, vending, entrance_type, ada)
+```
+
