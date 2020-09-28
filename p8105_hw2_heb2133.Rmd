@@ -40,7 +40,7 @@ precipitation_2018 =
   janitor::clean_names() %>% 
   drop_na(month) %>% 
   mutate(year = 2018) %>% 
-  relocate (year)
+  relocate(year)
              
 precipitation_2017 = 
   read_excel(
@@ -51,7 +51,7 @@ precipitation_2017 =
   janitor::clean_names() %>% 
   drop_na(month) %>% 
   mutate(year = 2017) %>% 
-  relocate (year)
+  relocate(year)
 ```
 
 Now combine annual precipitation:
@@ -126,4 +126,22 @@ NYC_distinct_df =
 ```
 
 `r nrow(NYC_distinct_df)` distinct stations serve the A train. Of these stations, `r nrow(filter(NYC_distinct_df, ada == TRUE))` are ADA compliant.
+
+## Problem 3
+
+Read and clean pols-month.csv dataset. 
+
+```{r}
+politicians_df = 
+  read_csv("./fivethirtyeight_datasets/pols-month.csv.") %>% 
+  janitor::clean_names() %>% 
+  separate(mon, c("year", "month", "day"), "-", convert = TRUE) %>% 
+  mutate(prez_gop = ifelse(prez_gop == 0, "no", "rep")) %>%
+  mutate(prez_dem = ifelse(prez_dem == 0, "no", "dem")) %>%
+  unite(president, c(prez_gop, prez_dem)) %>% 
+  mutate(president = recode(president, "no_dem" = "dem", "rep_no" = "rep")) %>% 
+  subset(select = -c(day))
+  
+
+```
 
