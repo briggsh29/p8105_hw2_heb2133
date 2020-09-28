@@ -101,13 +101,7 @@ NYC_transit_df =
     read_csv("./NYC_Transit_Subway_Entrance_And_Exit_Data (1).csv") %>% 
   janitor::clean_names() %>% 
   select(line, station_name, station_latitude, station_longitude, starts_with("route"), entry, vending, entrance_type, ada) %>% 
-  mutate_at(vars(route1:route11), as.character) %>% 
-  pivot_longer(route1:route11, 
-      names_to = "route_number",
-      names_prefix = "route",
-      values_to = "route_name") %>%
   mutate(entry = recode(entry, YES = TRUE, NO = FALSE))
-
 ```
 
 This dataset containes information on each subway entrance and exit station in New York City. Key variables include subway line, station name, latitude and longitude of the subway station, entrance type (e.g., stairs, door), if ADA compliant, if entrance is allowed, if vending, and the number and name of routes served. There are `r nrow(NYC_transit_df)` rows and `r ncol(NYC_transit_df)` columns in this dataset. 
@@ -119,13 +113,29 @@ There are `r nrow(distinct(NYC_transit_df, line, station_name))` distinct statio
 
 Reformat data so that route number and route name are distinct variables: 
 
-```{r}
-NYC_distinct_df =
-    distinct(NYC_transit_df, station_name, line, route_number, route_name, ada) %>% 
-  filter(route_name == "A")
+```{r reformat route name and number}
+NYC_distinct = NYC_transit_df %>% 
+  mutate_at(vars(route1:route11), as.character) %>% 
+  pivot_longer(route1:route11, 
+      names_to = "route_number",
+      names_prefix = "route",
+      values_to = "route_name") %>%
+  drop_na("route_name", "route_number") %>% 
+  distinct(line, station_name, line, route_number, route_name, ada)
 ```
 
-`r nrow(NYC_distinct_df)` distinct stations serve the A train. Of these stations, `r nrow(filter(NYC_distinct_df, ada == TRUE))` are ADA compliant.
+
+`r nrow(filter(NYC_distinct, route_name == "A"))` distinct stations serve the A train.
+
+```{r Code for A train and ADA compliant question}
+NYC_a_train = 
+  NYC_distinct %>% 
+  filter(route_name == "A") %>% 
+  filter(ada == TRUE)
+```
+
+
+Of these stations, `r nrow(NYC_a_train)` are ADA compliant.
 
 ## Problem 3
 
@@ -135,7 +145,7 @@ Read and clean pols-month.csv dataset (refer to comments for further details on 
 politicians_df = 
   read_csv("./fivethirtyeight_datasets/pols-month.csv.") %>% 
   janitor::clean_names() %>%
-  separate(mon, c("year", "month", "day")) %>%
+  separate(mon, c("year", "month", "day"), convert = TRUE) %>%
   mutate(year = as.numeric(year)) %>% 
   mutate(month = recode(month, 
                         "01" = "january", 
@@ -228,7 +238,17 @@ Join the datasets by merging snp into pols, and then merging unemployment into t
 pols_snp_df = 
   left_join(politicians_df, snp_df, by = c("year", "month"))
 
-pols_snp_unem = 
+final_538_df = 
   left_join(pols_snp_df, unemploy_df, by = c("year", "month"))
 ```
+
+The pols-month dataset contains information on the number of national politicians who are democratic or republican during the years `r range(pull(politicians_df))`. Variables include the date (month, year), whether the president was republican or democrat, and the number of democrat or republican govenors, senators, and representatives. There are `r nrow(politicians_df)` rows and `r ncol(politicians_df)` columns.
+
+The snp dataset contains information  
+
+The unemployment dataset contained
+
+Write a short paragraph about these datasets. Explain briefly what each dataset contained, and 
+
+The resulting merged dataset from these data has `r nrow(final_538_df)` rows and `r ncol(final_538_df)` columns. Key variables include year; month; whether democrat or republican president; number of democratic and republican governors, senators, and representatives; closing values of S&P stock index; and percentage of unemployment. The range of years within this data set is `r range(pull(final_538_df, year))`. 
 
