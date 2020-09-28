@@ -136,6 +136,7 @@ politicians_df =
   read_csv("./fivethirtyeight_datasets/pols-month.csv.") %>% 
   janitor::clean_names() %>%
   separate(mon, c("year", "month", "day")) %>%
+  mutate(year = as.numeric(year)) %>% 
   mutate(month = recode(month, 
                         "01" = "january", 
                         "02" = "february",
@@ -150,6 +151,7 @@ politicians_df =
                         "11" = "november",
                         "12" = "december"
                         )) %>% 
+  arrange(month) %>% 
   #Separated out "mon" variable; and
   #Replaced "month" ouput with month names
   mutate(prez_gop = ifelse(prez_gop == 0, "no", "rep")) %>%
@@ -169,6 +171,7 @@ snp_df =
   read_csv("./fivethirtyeight_datasets/snp.csv.") %>%
   janitor::clean_names() %>% 
   separate(date, c("month", "day", "year"), "/") %>%
+  mutate(year = as.numeric(year)) %>% 
   mutate(month = recode(month, 
                         "1" = "january", 
                         "2" = "february",
@@ -183,6 +186,7 @@ snp_df =
                         "11" = "november",
                         "12" = "december"
                         )) %>% 
+  arrange(month) %>% 
   #Separated out "date" variable to multiple columns; and
   #Replaced month output with month names
   subset(select = -c(day)) %>% 
@@ -202,7 +206,7 @@ unemploy_df =
     values_to = "unemployment"
   ) %>% 
   #Tidied month and unemployment variables; and
-  #Modified month variable to make output same across datasets
+  #Modified month variable in code below
   mutate(month = recode(month, 
                         "jan" = "january", 
                         "feb" = "february",
@@ -218,9 +222,13 @@ unemploy_df =
                         ))
 ```
 
-Join the datasets by merging snp into pols, and merging unemployment into the result.
+Join the datasets by merging snp into pols, and then merging unemployment into the result.
 
 ```{r}
+pols_snp_df = 
+  left_join(politicians_df, snp_df, by = c("year", "month"))
 
+pols_snp_unem = 
+  left_join(pols_snp_df, unemploy_df, by = c("year", "month"))
 ```
 
